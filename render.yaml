@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: hrguru-ats
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: hrguru-db
+          property: connectionString
+      - key: CLOUDINARY_URL
+        sync: false        # you paste this manually in Render dashboard
+      - key: PYTHON_VERSION
+        value: 3.11.0
+
+databases:
+  - name: hrguru-db
+    databaseName: hrguru
+    plan: free
