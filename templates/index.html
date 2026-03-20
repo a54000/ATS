@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>HR Guru — ATS Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Cabinet+Grotesk:wght@400;500;700;800;900&family=Instrument+Sans:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#0b0d11;--surf:#111318;--card:#161a22;--card2:#1c2030;
+  --border:#232838;--border2:#2e3447;
+  --accent:#e8643a;--accent2:#3a8be8;--green:#3ae8a0;--yellow:#e8c53a;--red:#e83a3a;
+  --text:#edf0f7;--muted:#6b7494;--muted2:#9099b8;--hover:#1e2230;--radius:12px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Instrument Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;font-size:14px}
+.shell{display:flex;min-height:100vh}
+aside{width:220px;flex-shrink:0;background:var(--surf);border-right:1px solid var(--border);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto}
+main{flex:1;min-width:0;display:flex;flex-direction:column}
+.logo{padding:22px 20px 18px;border-bottom:1px solid var(--border)}
+.logo h1{font-family:'Cabinet Grotesk',sans-serif;font-size:1.15rem;font-weight:900;letter-spacing:-.5px}
+.logo h1 em{color:var(--accent);font-style:normal}
+.logo p{font-size:.65rem;color:var(--muted);margin-top:2px;text-transform:uppercase;letter-spacing:.5px}
+nav{padding:14px 12px;flex:1}
+.nl{font-size:.6rem;text-transform:uppercase;letter-spacing:1.8px;color:var(--muted);padding:8px 8px 4px}
+.nb{display:flex;align-items:center;gap:10px;width:100%;padding:9px 10px;background:none;border:none;border-radius:8px;color:var(--muted2);font-family:'Instrument Sans',sans-serif;font-size:.82rem;cursor:pointer;transition:all .15s;text-align:left}
+.nb svg{width:15px;height:15px;flex-shrink:0;opacity:.7}
+.nb:hover{background:var(--hover);color:var(--text)}
+.nb.active{background:rgba(232,100,58,.12);color:var(--accent)}
+.nb.active svg{opacity:1}
+.nbadge{margin-left:auto;background:var(--accent);color:#fff;font-size:.58rem;font-weight:700;padding:1px 6px;border-radius:20px;min-width:18px;text-align:center}
+.upload-link{margin:0 12px 12px;padding:10px 12px;background:rgba(58,139,232,.1);border:1px solid rgba(58,139,232,.2);border-radius:9px;color:var(--accent2);font-size:.75rem;text-decoration:none;display:flex;align-items:center;gap:7px;transition:all .15s}
+.upload-link:hover{background:rgba(58,139,232,.18)}
+.sync-wrap{padding:12px;border-top:1px solid var(--border)}
+.last-txt{font-size:.6rem;color:var(--muted);text-align:center;margin-top:6px}
+/* topbar */
+.topbar{background:var(--surf);border-bottom:1px solid var(--border);padding:13px 26px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-shrink:0}
+.topbar-title{font-family:'Cabinet Grotesk',sans-serif;font-size:.95rem;font-weight:800}
+.stats-row{display:flex;gap:8px}
+.sp{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:5px 13px;display:flex;flex-direction:column;align-items:center;min-width:66px}
+.sp .n{font-family:'Cabinet Grotesk',sans-serif;font-size:1rem;font-weight:900;line-height:1}
+.sp .l{font-size:.58rem;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;margin-top:1px}
+.sp.a .n{color:var(--accent)} .sp.b .n{color:var(--accent2)} .sp.g .n{color:var(--green)} .sp.y .n{color:var(--yellow)}
+/* tabs */
+.tab-pane{display:none;flex:1;padding:22px 26px;overflow-y:auto}
+.tab-pane.active{display:block}
+/* filter bar */
+.fbar{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;align-items:center}
+.fbar select,.fbar input[type=text]{padding:7px 11px;background:var(--card);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'Instrument Sans',sans-serif;font-size:.78rem;outline:none;transition:border-color .2s;min-width:120px}
+.fbar select:focus,.fbar input[type=text]:focus{border-color:var(--accent)}
+.fbar select option{background:var(--card)}
+.fbar input[type=text]{flex:1;min-width:180px}
+.fbar input[type=text]::placeholder{color:var(--muted)}
+.fbar label{display:flex;align-items:center;gap:5px;font-size:.72rem;color:var(--muted2);cursor:pointer}
+.fbar label input{accent-color:var(--accent);width:13px;height:13px}
+/* table */
+.tw{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.th{padding:11px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.th strong{font-family:'Cabinet Grotesk',sans-serif;font-size:.85rem;font-weight:800}
+.th span{font-size:.7rem;color:var(--muted)}
+table{width:100%;border-collapse:collapse;font-size:.76rem}
+thead th{padding:8px 11px;background:var(--surf);font-family:'Cabinet Grotesk',sans-serif;font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);text-align:left;white-space:nowrap;border-bottom:1px solid var(--border)}
+tbody tr{border-bottom:1px solid var(--border);transition:background .1s}
+tbody tr:last-child{border-bottom:none}
+tbody tr:hover{background:var(--hover)}
+td{padding:9px 11px;vertical-align:middle}
+.cn{font-weight:500} .cm{color:var(--muted)} .cs{font-size:.68rem;color:var(--muted);margin-top:1px}
+.tag{display:inline-block;padding:2px 7px;border-radius:20px;font-size:.65rem;font-weight:500;white-space:nowrap}
+.tr{background:rgba(58,139,232,.1);color:var(--accent2)}
+.td{background:rgba(232,58,58,.1);color:var(--red)}
+.tok{background:rgba(58,232,160,.08);color:var(--green)}
+.tw2{background:rgba(232,197,58,.08);color:var(--yellow)}
+.cv-a{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;background:rgba(58,232,160,.07);color:var(--green);border:1px solid rgba(58,232,160,.18);border-radius:6px;font-size:.68rem;text-decoration:none;transition:all .15s}
+.cv-a:hover{background:rgba(58,232,160,.14)}
+.ib{background:none;border:none;color:var(--muted);cursor:pointer;padding:4px;border-radius:6px;transition:all .15s;line-height:1}
+.ib:hover{color:var(--red);background:rgba(232,58,58,.08)}
+.ib.edit:hover{color:var(--accent2);background:rgba(58,139,232,.08)}
+/* empty */
+.empty{text-align:center;padding:46px 20px;color:var(--muted)}
+.empty svg{width:38px;height:38px;margin-bottom:10px;opacity:.22}
+.empty p{font-size:.8rem}
+/* alerts */
+.al{display:flex;flex-direction:column;gap:7px}
+.ai{background:var(--card);border:1px solid var(--border);border-radius:9px;padding:12px 15px;display:flex;align-items:flex-start;gap:11px;transition:opacity .2s}
+.ai.read{opacity:.38}
+.ad{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:5px}
+.dd{background:var(--red)} .dm{background:var(--yellow)} .dn{background:var(--accent)} .dp{background:var(--muted)}
+.am{font-size:.78rem;flex:1} .at{font-size:.63rem;color:var(--muted);margin-top:2px}
+.afilt{display:flex;gap:7px;margin-bottom:14px;flex-wrap:wrap}
+.afb{padding:5px 13px;background:var(--card);border:1px solid var(--border);border-radius:20px;color:var(--muted2);font-size:.72rem;cursor:pointer;transition:all .15s}
+.afb:hover,.afb.active{background:var(--accent);border-color:var(--accent);color:#fff}
+/* reports */
+.rgrid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+@media(max-width:860px){.rgrid{grid-template-columns:1fr}}
+.rc{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:17px 19px}
+.rc h3{font-family:'Cabinet Grotesk',sans-serif;font-size:.82rem;font-weight:800;margin-bottom:13px;display:flex;align-items:center;justify-content:space-between}
+.rc h3 span{font-size:.65rem;color:var(--muted);font-family:'Instrument Sans',sans-serif;font-weight:400}
+.br{display:flex;align-items:center;gap:9px;margin-bottom:7px}
+.bl{width:120px;font-size:.72rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--muted2);flex-shrink:0}
+.bt{flex:1;height:6px;background:var(--border);border-radius:4px;overflow:hidden}
+.bf{height:100%;border-radius:4px;background:var(--accent);transition:width .55s cubic-bezier(.4,0,.2,1)}
+.bf.blue{background:var(--accent2)}
+.bn{width:28px;text-align:right;font-size:.7rem;color:var(--muted2);flex-shrink:0}
+.tc{width:100%;height:108px}
+.nsl{display:flex;flex-direction:column;gap:7px}
+.nsi{display:flex;align-items:center;gap:9px;padding:8px 11px;background:var(--card2);border-radius:8px}
+.nsa{width:28px;height:28px;border-radius:50%;background:rgba(232,100,58,.13);color:var(--accent);display:flex;align-items:center;justify-content:center;font-family:'Cabinet Grotesk',sans-serif;font-size:.78rem;font-weight:800;flex-shrink:0}
+.pt{width:100%;border-collapse:collapse;font-size:.75rem}
+.pt th{text-align:left;padding:6px 9px;font-size:.6rem;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);font-family:'Cabinet Grotesk',sans-serif;border-bottom:1px solid var(--border)}
+.pt td{padding:8px 9px;border-bottom:1px solid var(--border)}
+.pt tr:last-child td{border-bottom:none}
+.pt tr:hover td{background:var(--hover)}
+/* team */
+.tgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:11px;margin-bottom:18px}
+.tc2{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:15px 16px;display:flex;align-items:center;gap:11px}
+.tav{width:36px;height:36px;border-radius:50%;background:rgba(58,139,232,.13);color:var(--accent2);display:flex;align-items:center;justify-content:center;font-family:'Cabinet Grotesk',sans-serif;font-size:.88rem;font-weight:900;flex-shrink:0}
+.ti{flex:1;min-width:0}
+.tn2{font-weight:500;font-size:.82rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.te{font-size:.68rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tb2{font-size:.58rem;padding:1px 6px;border-radius:20px;background:rgba(58,232,160,.08);color:var(--green)}
+.tb2.auto{background:rgba(232,197,58,.08);color:var(--yellow)}
+.atf{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;display:flex;gap:9px;align-items:center;flex-wrap:wrap}
+.atf input{padding:8px 11px;background:var(--surf);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'Instrument Sans',sans-serif;font-size:.8rem;outline:none;flex:1;min-width:140px}
+.atf input:focus{border-color:var(--accent2)}
+.btnadd{padding:8px 16px;background:var(--accent2);border:none;border-radius:8px;color:#fff;font-family:'Cabinet Grotesk',sans-serif;font-size:.78rem;font-weight:700;cursor:pointer;white-space:nowrap}
+.btnadd:hover{filter:brightness(1.1)}
+/* section head */
+.sh{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.sh h2{font-family:'Cabinet Grotesk',sans-serif;font-size:1rem;font-weight:900}
+.sh p{font-size:.7rem;color:var(--muted);margin-top:1px}
+/* modal */
+.mbg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:100;align-items:center;justify-content:center}
+.mbg.open{display:flex}
+.modal{background:var(--card);border:1px solid var(--border2);border-radius:16px;padding:24px 26px;width:min(580px,95vw);max-height:90vh;overflow-y:auto}
+.modal h2{font-family:'Cabinet Grotesk',sans-serif;font-size:.95rem;font-weight:800;margin-bottom:16px}
+.mgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.mgrid .full{grid-column:1/-1}
+.mf label{display:block;font-size:.62rem;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);margin-bottom:3px}
+.mf input,.mf textarea{width:100%;padding:8px 10px;background:var(--surf);border:1px solid var(--border);border-radius:7px;color:var(--text);font-family:'Instrument Sans',sans-serif;font-size:.8rem;outline:none;transition:border-color .2s}
+.mf input:focus,.mf textarea:focus{border-color:var(--accent2)}
+.mf textarea{resize:vertical;min-height:55px}
+.mact{display:flex;gap:9px;margin-top:16px;justify-content:flex-end}
+.bsave{padding:8px 20px;background:var(--accent2);border:none;border-radius:7px;color:#fff;font-family:'Cabinet Grotesk',sans-serif;font-size:.78rem;font-weight:700;cursor:pointer}
+.bcancel{padding:8px 16px;background:var(--border);border:none;border-radius:7px;color:var(--text);font-family:'Cabinet Grotesk',sans-serif;font-size:.78rem;cursor:pointer}
+/* toast */
+#toast{position:fixed;bottom:20px;right:20px;padding:10px 16px;border-radius:9px;font-size:.78rem;display:none;z-index:999;animation:su .22s ease}
+#toast.ok{background:rgba(58,232,160,.1);border:1px solid var(--green);color:var(--green)}
+#toast.err{background:rgba(232,58,58,.1);border:1px solid var(--red);color:var(--red)}
+@keyframes su{from{transform:translateY(7px);opacity:0}to{transform:translateY(0);opacity:1}}
+</style>
+</head>
+<body>
+<div class="shell">
+<aside>
+  <div class="logo"><h1>HR<em>Guru</em></h1><p>Talent ATS</p></div>
+  <nav>
+    <div class="nl">Workspace</div>
+    <button class="nb active" onclick="showTab('candidates',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      Candidates
+    </button>
+    <button class="nb" onclick="showTab('alerts',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      Alerts<span class="nbadge" id="ab" style="display:none">0</span>
+    </button>
+    <div class="nl" style="margin-top:8px">Analytics</div>
+    <button class="nb" onclick="showTab('reports',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      Reports
+    </button>
+    <button class="nb" onclick="showTab('team',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M20 21a8 8 0 1 0-16 0"/></svg>
+      Team
+    </button>
+  </nav>
+  <a class="upload-link" href="/upload" target="_blank">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+    Recruiter Upload Page
+  </a>
+  <div class="sync-wrap">
+    <div class="last-txt" id="lastTxt">No uploads yet</div>
+  </div>
+</aside>
+
+<main>
+  <div class="topbar">
+    <div class="topbar-title" id="tabTitle">Candidate Pipeline</div>
+    <div class="stats-row">
+      <div class="sp a"><div class="n" id="stTotal">—</div><div class="l">Candidates</div></div>
+      <div class="sp b"><div class="n" id="stRoles">—</div><div class="l">Roles</div></div>
+      <div class="sp y"><div class="n" id="stDups">—</div><div class="l">Duplicates</div></div>
+      <div class="sp g"><div class="n" id="stAlerts">—</div><div class="l">Alerts</div></div>
+    </div>
+  </div>
+
+  <!-- Candidates -->
+  <div class="tab-pane active" id="tab-candidates">
+    <div class="fbar">
+      <input type="text" id="fQ" placeholder="Search name, skills, company, phone…" oninput="loadCandidates()"/>
+      <select id="fRole" onchange="loadCandidates()"><option value="">All Roles</option></select>
+      <select id="fSender" onchange="loadCandidates()"><option value="">All Recruiters</option></select>
+      <select id="fLoc" onchange="loadCandidates()"><option value="">All Locations</option></select>
+      <select id="fNotice" onchange="loadCandidates()">
+        <option value="">Any Notice</option>
+        <option value="immediate">Immediate</option>
+        <option value="15">15 days</option>
+        <option value="30">30 days</option>
+        <option value="60">60 days</option>
+        <option value="90">90 days</option>
+      </select>
+      <label><input type="checkbox" id="fDups" onchange="loadCandidates()"/> Show Duplicates</label>
+      <button class="btnadd" style="background:var(--green);color:#0b0d11;font-size:.75rem;padding:7px 14px" onclick="exportData('csv')">↓ CSV</button>
+      <button class="btnadd" style="background:var(--accent2);font-size:.75rem;padding:7px 14px" onclick="exportData('xlsx')">↓ Excel</button>
+    </div>
+    <div class="tw">
+      <div class="th"><strong>Candidates</strong><span id="cCount">0 records</span></div>
+      <div id="cBody"><div class="empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg><p>No candidates yet — share the upload link with your team</p></div></div>
+    </div>
+  </div>
+
+  <!-- Alerts -->
+  <div class="tab-pane" id="tab-alerts">
+    <div class="sh">
+      <div><h2>Alerts &amp; Notifications</h2><p>Duplicates, missing info, and team activity</p></div>
+      <button class="btnadd" style="background:var(--border);color:var(--text);font-size:.75rem" onclick="markAllRead()">Mark all read</button>
+    </div>
+    <div class="afilt">
+      <button class="afb active" onclick="filtAlert('',this)">All</button>
+      <button class="afb" onclick="filtAlert('duplicate',this)">🔁 Duplicates</button>
+      <button class="afb" onclick="filtAlert('missing_info',this)">⚠️ Missing Info</button>
+      <button class="afb" onclick="filtAlert('no_submission',this)">📭 No Submission</button>
+      <button class="afb" onclick="filtAlert('cv_mismatch',this)">📎 CV Mismatch</button>
+    </div>
+    <div class="al" id="aList"></div>
+  </div>
+
+  <!-- Reports -->
+  <div class="tab-pane" id="tab-reports">
+    <div class="sh">
+      <div><h2>Reports &amp; Analytics</h2><p>Recruiter performance and submission trends</p></div>
+      <select id="rdDays" onchange="loadReports()" style="padding:6px 11px;background:var(--card);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:.75rem;outline:none">
+        <option value="7">Last 7 days</option>
+        <option value="14" selected>Last 14 days</option>
+        <option value="30">Last 30 days</option>
+        <option value="90">Last 90 days</option>
+      </select>
+    </div>
+    <div class="rgrid">
+      <div class="rc" style="grid-column:1/-1">
+        <h3>Daily Submission Trend <span id="tSub"></span></h3>
+        <svg class="tc" id="tSvg"></svg>
+      </div>
+      <div class="rc"><h3>Recruiter Performance <span>unique candidates</span></h3><div id="pBars"></div></div>
+      <div class="rc"><h3>Full Performance Table</h3><div id="pTable"></div></div>
+      <div class="rc"><h3>Not Submitted Today</h3><div class="nsl" id="noSub"></div></div>
+    </div>
+  </div>
+
+  <!-- Team -->
+  <div class="tab-pane" id="tab-team">
+    <div class="sh"><div><h2>Team Members</h2><p>Fixed members + auto-discovered from uploads</p></div></div>
+    <div class="tgrid" id="tGrid"></div>
+    <div class="atf">
+      <input type="text"  id="nName"  placeholder="Full name"/>
+      <input type="email" id="nEmail" placeholder="Email address"/>
+      <button class="btnadd" onclick="addMember()">+ Add Member</button>
+    </div>
+  </div>
+</main>
+</div>
+
+<!-- Edit modal -->
+<div class="mbg" id="editModal">
+  <div class="modal">
+    <h2>Edit Candidate</h2>
+    <input type="hidden" id="eId"/>
+    <div class="mgrid">
+      <div class="mf"><label>Name</label><input id="e_candidate_name"/></div>
+      <div class="mf"><label>Role</label><input id="e_role_name"/></div>
+      <div class="mf"><label>Email</label><input id="e_email_addr"/></div>
+      <div class="mf"><label>Phone</label><input id="e_phone"/></div>
+      <div class="mf"><label>Current Company</label><input id="e_current_company"/></div>
+      <div class="mf"><label>Designation</label><input id="e_current_role"/></div>
+      <div class="mf"><label>Experience</label><input id="e_experience_years"/></div>
+      <div class="mf"><label>Notice Period</label><input id="e_notice_period"/></div>
+      <div class="mf"><label>Current Salary</label><input id="e_current_salary"/></div>
+      <div class="mf"><label>Expected Salary</label><input id="e_expected_salary"/></div>
+      <div class="mf"><label>Current Location</label><input id="e_current_location"/></div>
+      <div class="mf"><label>Preferred Location</label><input id="e_preferred_location"/></div>
+      <div class="mf full"><label>Key Skills</label><input id="e_key_skills"/></div>
+      <div class="mf full"><label>Remarks</label><textarea id="e_remarks"></textarea></div>
+    </div>
+    <div class="mact">
+      <button class="bcancel" onclick="closeModal()">Cancel</button>
+      <button class="bsave"   onclick="saveEdit()">Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+const esc=s=>String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const $=id=>document.getElementById(id);
+function toast(m,t='ok'){const e=$('toast');e.textContent=m;e.className=t;e.style.display='block';setTimeout(()=>e.style.display='none',4000)}
+
+function showTab(n,btn){
+  document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('active'));
+  $('tab-'+n).classList.add('active'); btn.classList.add('active');
+  const t={candidates:'Candidate Pipeline',alerts:'Alerts & Notifications',reports:'Reports & Analytics',team:'Team Management'};
+  $('tabTitle').textContent=t[n];
+  if(n==='alerts')  loadAlerts();
+  if(n==='reports') loadReports();
+  if(n==='team')    loadTeam();
+}
+
+async function loadStats(){
+  const s=await fetch('/api/stats').then(r=>r.json());
+  $('stTotal').textContent=s.total; $('stRoles').textContent=s.roles;
+  $('stDups').textContent=s.duplicates; $('stAlerts').textContent=s.unread_alerts;
+  const b=$('ab');
+  if(s.unread_alerts>0){b.textContent=s.unread_alerts;b.style.display='';}else b.style.display='none';
+  if(s.last_upload){
+    const d=new Date(s.last_upload);
+    $('lastTxt').textContent='Last upload: '+d.toLocaleDateString('en-IN',{day:'numeric',month:'short'});
+  }
+}
+
+async function loadFilters(){
+  const f=await fetch('/api/filters').then(r=>r.json());
+  const re=$('fRole'),se=$('fSender'),le=$('fLoc');
+  const cr=re.value,cs=se.value,cl=le.value;
+  re.innerHTML='<option value="">All Roles</option>';
+  f.roles.forEach(r=>{const o=document.createElement('option');o.value=r;o.textContent=r;if(r===cr)o.selected=true;re.appendChild(o)});
+  se.innerHTML='<option value="">All Recruiters</option>';
+  f.senders.forEach(s=>{const o=document.createElement('option');o.value=s.recruiter_email;o.textContent=s.recruiter_name||s.recruiter_email;if(s.recruiter_email===cs)o.selected=true;se.appendChild(o)});
+  le.innerHTML='<option value="">All Locations</option>';
+  f.locations.forEach(l=>{const o=document.createElement('option');o.value=l;o.textContent=l;if(l===cl)o.selected=true;le.appendChild(o)});
+}
+
+async function loadCandidates(){
+  const p=new URLSearchParams();
+  const q=$('fQ').value,role=$('fRole').value,sender=$('fSender').value,
+        loc=$('fLoc').value,notice=$('fNotice').value,dups=$('fDups').checked;
+  if(q)p.set('q',q);if(role)p.set('role',role);if(sender)p.set('sender',sender);
+  if(loc)p.set('location',loc);if(notice)p.set('notice',notice);if(dups)p.set('show_dups','1');
+  const rows=await fetch('/api/candidates?'+p).then(r=>r.json());
+  renderCandidates(rows);
+}
+
+function renderCandidates(rows){
+  $('cCount').textContent=rows.length+' record'+(rows.length!==1?'s':'');
+  const b=$('cBody');
+  if(!rows.length){b.innerHTML=`<div class="empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><p>No candidates match your filters</p></div>`;return}
+  b.innerHTML=`<table><thead><tr>
+    <th>Candidate</th><th>Role</th><th>Recruiter</th><th>Company/Title</th>
+    <th>Exp</th><th>Skills</th><th>Notice</th><th>Salary</th><th>Location</th>
+    <th>Status</th><th>CV</th><th></th></tr></thead>
+    <tbody>${rows.map(r=>{
+      const mis=r.missing_info?r.missing_info.split(','):[];
+      const sb=r.is_duplicate?`<span class="tag td">Duplicate</span>`:mis.length?`<span class="tag tw2">⚠ ${mis.join(', ')}</span>`:`<span class="tag tok">✓</span>`;
+      const cvn=null; // cv_url used directly
+      return`<tr>
+        <td><div class="cn">${esc(r.candidate_name)||'<em style="color:var(--muted)">unnamed</em>'}</div>
+            <div class="cs">${esc(r.email_addr)}${r.phone?' · '+esc(r.phone):''}</div></td>
+        <td><span class="tag tr" title="${esc(r.role_name)}" style="max-width:130px;overflow:hidden;text-overflow:ellipsis;display:inline-block">${esc(r.role_name)||'—'}</span></td>
+        <td style="color:var(--accent);font-size:.75rem">${esc(r.recruiter_name)}</td>
+        <td><div>${esc(r.current_company)}</div><div class="cs">${esc(r.current_role)}</div></td>
+        <td class="cm">${esc(r.experience_years)}</td>
+        <td style="max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--muted)" title="${esc(r.key_skills)}">${esc(r.key_skills)}</td>
+        <td class="cm">${esc(r.notice_period)}</td>
+        <td class="cm"><div>${esc(r.current_salary)}</div><div class="cs">${esc(r.expected_salary)}</div></td>
+        <td class="cm"><div>${esc(r.current_location)}</div><div class="cs">${esc(r.preferred_location)}</div></td>
+        <td>${sb}</td>
+        <td>${r.cv_url?`<a class="cv-a" href="${r.cv_url}" target="_blank">↓ CV</a>`:'<span style="color:var(--border)">—</span>'}</td>
+        <td style="display:flex;gap:3px">
+          <button class="ib edit" onclick='openEdit(${JSON.stringify(r)})' title="Edit">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          </button>
+          <button class="ib" onclick="delC(${r.id})" title="Delete">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
+          </button>
+        </td></tr>`;
+    }).join('')}</tbody></table>`;
+}
+
+let curAlertType='';
+async function loadAlerts(){
+  const p=curAlertType?`?type=${curAlertType}`:'';
+  const rows=await fetch('/api/alerts'+p).then(r=>r.json());
+  const l=$('aList');
+  if(!rows.length){l.innerHTML=`<div class="empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/></svg><p>No alerts</p></div>`;return}
+  const dm={duplicate:'dd',missing_info:'dm',no_submission:'dn',parse_failed:'dp',cv_mismatch:'dd'};
+  l.innerHTML=rows.map(a=>`<div class="ai${a.is_read?' read':''}" id="ai-${a.id}">
+    <div class="ad ${dm[a.alert_type]||'dp'}"></div>
+    <div style="flex:1"><div class="am">${esc(a.message)}</div>
+    <div class="at">${a.alert_type.replace('_',' ')} · ${new Date(a.created_at).toLocaleString('en-IN',{dateStyle:'medium',timeStyle:'short'})}</div></div>
+    ${!a.is_read?`<button class="ib edit" onclick="mRead(${a.id})" title="Mark read"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></button>`:''}
+  </div>`).join('');
+}
+
+function filtAlert(t,btn){curAlertType=t;document.querySelectorAll('.afb').forEach(b=>b.classList.remove('active'));btn.classList.add('active');loadAlerts()}
+async function markAllRead(){await fetch('/api/alerts/read',{method:'POST'});loadAlerts();loadStats()}
+async function mRead(id){await fetch(`/api/alerts/${id}/read`,{method:'POST'});const e=document.getElementById('ai-'+id);if(e)e.classList.add('read');loadStats()}
+
+async function loadReports(){
+  const days=$('rdDays').value;
+  const[perf,trend,noSub]=await Promise.all([
+    fetch(`/api/reporting/recruiter_performance?days=${days}`).then(r=>r.json()),
+    fetch(`/api/reporting/daily_trend?days=${days}`).then(r=>r.json()),
+    fetch('/api/reporting/no_submission_today').then(r=>r.json()),
+  ]);
+  $('tSub').textContent=`last ${days} days`;
+  renderBars(perf); renderPerfTable(perf); renderTrend(trend); renderNoSub(noSub);
+}
+
+function renderBars(perf){
+  const max=Math.max(1,...perf.map(p=>p.unique_candidates));
+  $('pBars').innerHTML=perf.length?perf.map(p=>`<div class="br">
+    <div class="bl" title="${esc(p.recruiter_name)}">${esc(p.recruiter_name)}</div>
+    <div class="bt"><div class="bf" style="width:${Math.round(p.unique_candidates/max*100)}%"></div></div>
+    <div class="bn">${p.unique_candidates}</div></div>`).join(''):'<p style="font-size:.76rem;color:var(--muted)">No data yet</p>';
+}
+
+function renderPerfTable(perf){
+  $('pTable').innerHTML=perf.length?`<table class="pt"><thead><tr><th>Recruiter</th><th>Total</th><th>Unique</th><th>Dups</th><th>Days</th></tr></thead>
+    <tbody>${perf.map(p=>`<tr><td>${esc(p.recruiter_name)}</td><td>${p.total}</td>
+    <td style="color:var(--green)">${p.unique_candidates}</td>
+    <td style="color:var(--red)">${p.duplicates}</td>
+    <td>${p.active_days}</td></tr>`).join('')}</tbody></table>`:'<p style="font-size:.76rem;color:var(--muted)">No data yet</p>';
+}
+
+function renderTrend(trend){
+  const svg=$('tSvg'); if(!trend.length){svg.innerHTML='<text x="50%" y="50%" text-anchor="middle" fill="#6b7494" font-size="12">No data yet</text>';return}
+  const W=800,H=100,pad=28;
+  const vals=trend.map(t=>t.unique_c),maxV=Math.max(1,...vals);
+  const pts=trend.map((t,i)=>[pad+(i/(trend.length-1||1))*(W-pad*2),H-pad-(t.unique_c/maxV)*(H-pad*2)]);
+  const area=`M${pts[0][0]},${H-pad} `+pts.map(p=>`L${p[0]},${p[1]}`).join(' ')+` L${pts[pts.length-1][0]},${H-pad} Z`;
+  const line=pts.map((p,i)=>`${i?'L':'M'}${p[0]},${p[1]}`).join(' ');
+  svg.innerHTML=`<defs><linearGradient id="tg" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#e8643a" stop-opacity=".22"/><stop offset="100%" stop-color="#e8643a" stop-opacity="0"/>
+  </linearGradient></defs>
+  <path d="${area}" fill="url(#tg)"/>
+  <path d="${line}" fill="none" stroke="#e8643a" stroke-width="2" stroke-linejoin="round"/>
+  ${pts.map((p,i)=>`<circle cx="${p[0]}" cy="${p[1]}" r="3" fill="#e8643a"/>
+    <text x="${p[0]}" y="${H-4}" text-anchor="middle" fill="#6b7494" font-size="9">${trend[i].day.slice(5)}</text>
+    <text x="${p[0]}" y="${p[1]-7}" text-anchor="middle" fill="#edf0f7" font-size="9">${trend[i].unique_c||''}</text>`).join('')}`;
+}
+
+function renderNoSub(list){
+  const e=$('noSub');
+  if(!list.length){e.innerHTML='<p style="font-size:.76rem;color:var(--green)">✓ Everyone has submitted today</p>';return}
+  e.innerHTML=list.map(m=>`<div class="nsi">
+    <div class="nsa">${(m.name||m.email)[0].toUpperCase()}</div>
+    <div><div style="font-size:.8rem;font-weight:500">${esc(m.name)}</div>
+    <div style="font-size:.67rem;color:var(--muted)">${esc(m.email)}</div></div>
+    <span class="tag tw2" style="margin-left:auto">Not submitted</span></div>`).join('');
+}
+
+async function loadTeam(){
+  const members=await fetch('/api/team').then(r=>r.json());
+  $('tGrid').innerHTML=members.length?members.map(m=>`<div class="tc2">
+    <div class="tav">${(m.name||m.email)[0].toUpperCase()}</div>
+    <div class="ti"><div class="tn2">${esc(m.name)}</div><div class="te">${esc(m.email)}</div>
+    <span class="tb2${m.is_fixed?'':' auto'}">${m.is_fixed?'Fixed':'Auto-discovered'}</span></div>
+    <button class="ib" onclick="delMember(${m.id})" title="Remove">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button></div>`).join('')
+  :'<p style="font-size:.8rem;color:var(--muted)">No team members yet — add them below or they appear after first upload.</p>';
+}
+async function addMember(){
+  const name=$('nName').value.trim(),email=$('nEmail').value.trim();
+  if(!name||!email){toast('Name and email required','err');return}
+  await fetch('/api/team',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name,email})});
+  $('nName').value='';$('nEmail').value='';loadTeam();toast('Team member added');
+}
+async function delMember(id){if(!confirm('Remove?'))return;await fetch(`/api/team/${id}`,{method:'DELETE'});loadTeam()}
+
+function openEdit(r){
+  $('eId').value=r.id;
+  ['candidate_name','role_name','email_addr','phone','current_company','current_role',
+   'experience_years','notice_period','current_salary','expected_salary',
+   'current_location','preferred_location','key_skills','remarks'].forEach(k=>{const e=$('e_'+k);if(e)e.value=r[k]||''});
+  $('editModal').classList.add('open');
+}
+function closeModal(){$('editModal').classList.remove('open')}
+async function saveEdit(){
+  const id=$('eId').value,data={};
+  ['candidate_name','role_name','email_addr','phone','current_company','current_role',
+   'experience_years','notice_period','current_salary','expected_salary',
+   'current_location','preferred_location','key_skills','remarks'].forEach(k=>{const e=$('e_'+k);if(e)data[k]=e.value});
+  await fetch(`/api/candidate/${id}`,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+  closeModal();loadCandidates();toast('Saved');
+}
+$('editModal').addEventListener('click',e=>{if(e.target===$('editModal'))closeModal()});
+
+async function delC(id){if(!confirm('Delete candidate?'))return;await fetch(`/api/candidate/${id}`,{method:'DELETE'});loadCandidates();loadStats();toast('Deleted')}
+
+function exportData(fmt){
+  const p=new URLSearchParams();
+  const q=$('fQ').value,role=$('fRole').value,sender=$('fSender').value,
+        loc=$('fLoc').value,notice=$('fNotice').value,dups=$('fDups').checked;
+  if(q)p.set('q',q);if(role)p.set('role',role);if(sender)p.set('sender',sender);
+  if(loc)p.set('location',loc);if(notice)p.set('notice',notice);if(dups)p.set('show_dups','1');
+  p.set('fmt',fmt);
+  window.location='/api/candidates/export?'+p.toString();
+}
+
+(async()=>{await loadStats();await loadFilters();await loadCandidates();})();
+</script>
+</body>
+</html>
