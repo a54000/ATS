@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>HR Guru ATS - User Guide</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#0d1017;color:#d9dee8;line-height:1.6}
+    .shell{display:grid;grid-template-columns:250px 1fr;min-height:100vh}
+    .side{background:#1c2030;border-right:1px solid #2a2f3a;padding:24px;position:sticky;top:0;height:100vh;overflow:auto}
+    .logo{color:#e8643a;font-size:24px;font-weight:800;margin-bottom:6px}.logo span{color:#fff}
+    .subtitle{color:#6b7494;font-size:12px;margin-bottom:26px}
+    .side a{display:block;color:#8892b0;text-decoration:none;padding:9px 10px;border-radius:8px;font-size:13px;margin-bottom:4px}
+    .side a:hover{background:#e8643a;color:#fff}
+    .main{padding:32px 42px;max-width:1120px}
+    .back{color:#e8643a;text-decoration:none;font-size:13px;font-weight:700}
+    h1{font-size:30px;color:#fff;margin:18px 0 8px}
+    .lead{color:#8892b0;max-width:820px;margin-bottom:26px}
+    h2{font-size:20px;color:#fff;margin:30px 0 12px;padding-top:14px;border-top:1px solid #2a2f3a}
+    h3{font-size:15px;color:#e8643a;margin:18px 0 8px}
+    p{margin-bottom:12px;color:#cfd5df}
+    ol,ul{margin:0 0 14px 22px}
+    li{margin-bottom:8px}
+    .card{background:#1c2030;border:1px solid #2a2f3a;border-radius:10px;padding:16px;margin:14px 0}
+    .card-title{color:#fff;font-weight:800;margin-bottom:6px}
+    .note{background:#252a3a;border:1px solid #343b52;border-radius:10px;padding:12px 14px;color:#cfd5df;margin:12px 0}
+    table{width:100%;border-collapse:separate;border-spacing:0;background:#1c2030;border:1px solid #2a2f3a;border-radius:10px;overflow:hidden;margin:12px 0 20px}
+    th,td{padding:11px 13px;border-bottom:1px solid #2a2f3a;text-align:left;font-size:13px;vertical-align:top}
+    th{background:#141824;color:#e8643a;text-transform:uppercase;font-size:11px;letter-spacing:.4px}
+    tr:last-child td{border-bottom:none}
+    code{background:#252a3a;color:#fff;padding:2px 6px;border-radius:5px}
+    .checklist li{list-style:disc}
+    @media(max-width:820px){.shell{grid-template-columns:1fr}.side{position:static;height:auto}.main{padding:24px}}
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <aside class="side">
+      <div class="logo">HR <span>Guru</span></div>
+      <div class="subtitle">ATS User Guide</div>
+      <a href="/">Back to ATS</a>
+      <a href="#quick-start">Quick Start</a>
+      <a href="#requirements">1. Requirements</a>
+      <a href="#candidates">2. Add Candidates</a>
+      <a href="#jd-match">3. JD/CV Match</a>
+      <a href="#interview">4. Interview Questions</a>
+      <a href="#review">5. Review Candidates</a>
+      <a href="#reports">6. Reports</a>
+      <a href="#admin">7. Admin Tasks</a>
+    </aside>
+    <main class="main">
+      <a class="back" href="/">Back to HR Guru ATS</a>
+      <h1>How To Use HR Guru ATS</h1>
+      <p class="lead">Use this guide as an operating checklist. Follow the steps in order when creating a requirement, adding candidates, matching CVs to a JD, and exporting recruiter-ready summaries.</p>
+
+      <h2 id="quick-start">Quick Start</h2>
+      <ol>
+        <li>Create or open a requirement.</li>
+        <li>Attach the latest JD file to that requirement.</li>
+        <li>Add candidates manually or through bulk upload.</li>
+        <li>Use <strong>JD Match</strong> to compare one JD against multiple CVs.</li>
+        <li>Open the ranked candidate result and review strengths, concerns, missing skills, role fit, domain fit, and summary.</li>
+        <li>Export the match PDF when sharing with the hiring manager.</li>
+      </ol>
+
+      <h2 id="requirements">1. Create And Maintain Requirements</h2>
+      <ol>
+        <li>Open <strong>Requirements</strong> from the left menu.</li>
+        <li>Click <strong>Add Requirement</strong>.</li>
+        <li>Enter requirement title, client, assigned sourcer, assigned recruiter, daily target, and status.</li>
+        <li>Attach the JD using <strong>Attach Job Description</strong>.</li>
+        <li>Click <strong>Save Requirement</strong>.</li>
+      </ol>
+      <div class="note">If the JD changes later, open the requirement with <strong>Edit</strong>, upload the new JD, and save. The latest uploaded JD becomes the tagged JD for that requirement.</div>
+
+      <h2 id="candidates">2. Add Candidates</h2>
+      <ol>
+        <li>Open <strong>Candidates</strong>.</li>
+        <li>Click <strong>Add Candidate</strong>.</li>
+        <li>Select the requirement first.</li>
+        <li>Upload the CV and click parse if available.</li>
+        <li>Review extracted fields: name, email, phone, company, role, experience, skills, notice period, salary, and location.</li>
+        <li>Complete any missing mandatory fields.</li>
+        <li>Submit the candidate.</li>
+      </ol>
+      <div class="note">Non-admin users can see only candidates uploaded or assigned to them. Admin users can see all candidates.</div>
+
+      <h2 id="jd-match">3. Use JD/CV Match</h2>
+      <h3>Match Multiple Candidates Against One JD</h3>
+      <ol>
+        <li>Open <strong>JD Match</strong>.</li>
+        <li>Select <strong>Candidate Matching</strong>.</li>
+        <li>Paste the JD text or upload a JD file.</li>
+        <li>Select one or more candidate CV files.</li>
+        <li>Optionally enter <strong>Custom Screening Rules</strong>, such as <code>Must have Kubernetes</code> or <code>Required: Bangalore location</code>.</li>
+        <li>Click <strong>Analyze</strong>.</li>
+        <li>Review the right-side ranking list. Candidates are sorted by match score.</li>
+        <li>Click a candidate name in the ranking list to open detailed match results.</li>
+      </ol>
+
+      <h3>Read The Match Result</h3>
+      <table>
+        <tr><th>Section</th><th>How To Use It</th></tr>
+        <tr><td>Match Overview</td><td>Check final score, verdict, recommendation, confidence, structured score, semantic score, and hard-filter score.</td></tr>
+        <tr><td>Strengths / Concerns</td><td>Use this for quick recruiter screening notes.</td></tr>
+        <tr><td>Skills</td><td>Confirm matched and missing must-have skills.</td></tr>
+        <tr><td>Breakdown</td><td>Review must-have skills, role fit, experience fit, domain fit, seniority fit, and nice-to-have scoring.</td></tr>
+        <tr><td>Candidate Snapshot</td><td>Check role, experience, education, domains, employment status, and top skills.</td></tr>
+        <tr><td>Role History</td><td>Review latest job roles and responsibilities extracted from the CV.</td></tr>
+      </table>
+
+      <h3>Export Match Results</h3>
+      <ol>
+        <li>Open the selected candidate's match dashboard.</li>
+        <li>In <strong>Hiring Manager Summary</strong>, click <strong>Export PDF</strong>.</li>
+        <li>The exported file includes the candidate name in the filename.</li>
+      </ol>
+
+      <h2 id="interview">4. Generate Interview Screening Questions</h2>
+      <ol>
+        <li>Open <strong>JD Match</strong>.</li>
+        <li>Select <strong>Interview Questions</strong>.</li>
+        <li>Paste the JD text or upload the JD file.</li>
+        <li>Click <strong>Generate Questions</strong>.</li>
+        <li>Questions open in a separate popup window.</li>
+        <li>Click <strong>Export PDF</strong> in the popup to download the screening questions.</li>
+      </ol>
+      <div class="note">If Ollama is running, the app uses the LLM for richer questions. If Ollama is unavailable, it generates deterministic fallback questions from mandatory JD skills.</div>
+
+      <h2 id="review">5. Review And Manage Candidates</h2>
+      <ul class="checklist">
+        <li>Use search to find by name, role, company, skill, email, or phone.</li>
+        <li>Use client and requirement filters to narrow the list.</li>
+        <li>Update candidate status after each action.</li>
+        <li>Open a candidate to view or edit details.</li>
+        <li>Upload a replacement CV from the candidate edit modal when needed.</li>
+      </ul>
+
+      <h2 id="reports">6. Use Reports</h2>
+      <ol>
+        <li>Open <strong>Reports</strong>.</li>
+        <li>Select report type: summary, sourcer, status, skills, submissions, or daily dashboard.</li>
+        <li>Set date range or use quick filters like Today, This Week, or This Month.</li>
+        <li>Click <strong>Generate</strong>.</li>
+        <li>Export reports when needed.</li>
+      </ol>
+
+      <h2 id="admin">7. Admin Tasks</h2>
+      <h3>User Management</h3>
+      <ol>
+        <li>Open <strong>User Management</strong> from the left menu.</li>
+        <li>Add users or create logins from team members.</li>
+        <li>Assign Admin or Bulk Upload access as needed.</li>
+        <li>Reset passwords for users when required.</li>
+        <li>Approve new user registration requests from the approval email link.</li>
+      </ol>
+
+      <h3>Team And User Tables</h3>
+      <table>
+        <tr><th>Table</th><th>Purpose</th></tr>
+        <tr><td><code>team_members</code></td><td>Stores team member details such as name, email, phone, role, and bulk upload permission.</td></tr>
+        <tr><td><code>app_users</code></td><td>Stores login users, username, password hash, admin flag, active flag, and link to <code>team_members</code>.</td></tr>
+        <tr><td><code>password_reset_tokens</code></td><td>Stores temporary forgot-password reset links.</td></tr>
+        <tr><td><code>user_registration_requests</code></td><td>Stores new user registration requests awaiting admin approval.</td></tr>
+      </table>
+    </main>
+  </div>
+</body>
+</html>
